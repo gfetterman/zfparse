@@ -103,6 +103,13 @@ class VocGroup:
     def __str__(self):
         return ' '.join(v.name for v in self.vocalizations)
     
+    def __iter__(self):
+        for voc in self.vocalizations:
+            yield voc
+    
+    def __getitem__(self, index):
+        return self.vocalizations[index]
+    
     def copy(self):
         return VocGroup(self.voc_list, copy.deepcopy(self.voc_idxs))
 
