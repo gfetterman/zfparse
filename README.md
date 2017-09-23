@@ -51,7 +51,7 @@ A `Bout`'s introductory notes are stored as a list of `Vocalizations`, which pos
 
     >>> phrases[0][0].intro_notes
     [Vocalization(start=datetime.datetime(...), stop=datetime.datetime(...), name='i'),
-     Vocalization(start=datetime.datetime(...), stop=datetime.datetime(...), name='i']
+     Vocalization(start=datetime.datetime(...), stop=datetime.datetime(...), name='i')]
 
 A `Bout`'s motifs are stored as a list of `VocGroup` objects.
 
