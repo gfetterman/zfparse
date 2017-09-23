@@ -33,6 +33,38 @@ You can then obtain phrases, bouts, and motifs by running `full_parse()`.
 
 The module contains some default constants for the parameters of parsing, which work reasonably well for many birds. You should examine the results of the parsing to see if you need to adjust these parameters (which you can do in the call to `full_parse()`) for your bird.
 
+## Sample output
+
+A call to `full_parse()` produces a list of phrases, each of which is simply a list of `Bout` objects.
+
+    >>> phrases = full_parse(...)
+    >>> phrases
+    [[<Bout ...>, <Bout ...>],
+     [<Bout ...>],
+     [<Bout ...>, <Bout ...>, <Bout ...>]]
+    >>> phrases[0]
+    [<Bout ...>, <Bout ...>]
+
+A `Bout` bundles together a sequence of zero or more introductory notes and a sequence of zero or more syllables, which are broken into motifs. A `Bout` also keeps track of intervening vocalizations, such as short calls that occur in the middle of these sequences without breaking them.
+
+A `Bout`'s introductory notes are stored as a list of `Vocalizations`, which possess a `start` and `stop` (both `datetime` objects) and a `name`.
+
+    >>> phrases[0][0].intro_notes
+    [Vocalization(start=datetime.datetime(...), stop=datetime.datetime(...), name='i'),
+     Vocalization(start=datetime.datetime(...), stop=datetime.datetime(...), name='i']
+
+A `Bout`'s motifs are stored as a list of `VocGroup` objects.
+
+    >>> phrases[0][0].motifs
+    [<VocGroup ...>, <VocGroup ...>]
+
+These `VocGroup` objects contain `Vocalization` objects, which can be accessed as if the `VocGroup` were a list.
+
+    >>> [v.name for v in phrases[0][0].motifs[0]]
+    ['a', 'b', 'c', 'd', 'e']
+    >>> phrases[0][0].motifs[0][3]
+    Vocalization(start=datetime.datetime(...), stop=datetime.datetime(...), name='d')
+
 ## Parsing explanation
 
 [Coming soon]
