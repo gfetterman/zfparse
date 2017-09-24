@@ -72,14 +72,15 @@ These `VocGroup` objects contain `Vocalization` objects, which can be accessed a
 
 The `dataframe_from_phrases()` function will construct a Pandas DataFrame from a phrase list. The columns are:
 
-* the phrase number within the list
-* the bout number within a phrase
-* the motif number within a bout
+1. the phrase number within the list
+2. the bout number within a phrase
+3. the motif number within a bout
   * this will be 'intro' for intro notes
   * this will be 'extra' for intervening vocalizations
-* the vocalization start datetime
-* the vocalization stop datetim
-* the vocalization name
+4. the vocalization number within a motif or 'intro' or 'extra' group
+5. the vocalization start datetime
+6. the vocalization stop datetime
+7. the vocalization name
 
 ## Parsing explanation
 
