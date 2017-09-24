@@ -68,6 +68,19 @@ These `VocGroup` objects contain `Vocalization` objects, which can be accessed a
     >>> phrases[0][0].motifs[0][3]
     Vocalization(start=datetime.datetime(...), stop=datetime.datetime(...), name='d')
 
+### DataFrame output
+
+The `dataframe_from_phrases()` function will construct a Pandas DataFrame from a phrase list. The columns are:
+
+* the phrase number within the list
+* the bout number within a phrase
+* the motif number within a bout
+  * this will be 'intro' for intro notes
+  * this will be 'extra' for intervening vocalizations
+* the vocalization start datetime
+* the vocalization stop datetim
+* the vocalization name
+
 ## Parsing explanation
 
 [Coming soon]
