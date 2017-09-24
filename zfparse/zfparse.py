@@ -236,8 +236,10 @@ def full_parse(voc_list,
     
     Returns:
         list of Phrases"""
-    in_grps = group_elements(voc_list, [bird_meta.intro_note], bird_meta.alias)
-    song_grps = group_elements(voc_list, bird_meta.syllables, bird_meta.alias)
+    in_grps = group_elements(voc_list, [bird_meta.intro_note],
+                             bird_meta.alias, bird_meta.ignore)
+    song_grps = group_elements(voc_list, bird_meta.syllables,
+                               bird_meta.alias, bird_meta.ignore)
     ann_ing = anneal_groups(in_grps, intro_anneal, [g.start for g in song_grps])
     ann_sg = anneal_groups(song_grps, song_anneal, [g.start for g in in_grps])
     split_ing = split_groups(ann_ing, intro_split)
@@ -249,7 +251,7 @@ def full_parse(voc_list,
     return sorted(phrases, key=lambda p: p[0].start)
 
 def dataframe_from_phrases(phrase_list):
-    """Convert a list of phrases into a pandas DataFrame containing all vocalizations.
+    """Convert a list of phrases into a DataFrame containing all vocalizations.
     
     The DataFrame has columns for:
       * phrase number
@@ -280,21 +282,24 @@ def dataframe_from_phrases(phrase_list):
     extra_tuples = [(p_idx,b_idx,'extra',e_idx,start,stop,name)
                     for p_idx,phrase in enumerate(phrase_list)
                     for b_idx,bout in enumerate(phrase)
-                    for e_idx,(start,stop,name) in enumerate(bout.intervening_vocs)]
-    df = pd.DataFrame.from_records((intro_tuples + syll_tuples + extra_tuples), columns=col)
+                    for e_idx,(start,stop,name)
+                      in enumerate(bout.intervening_vocs)]
+    df = pd.DataFrame.from_records((intro_tuples + syll_tuples + extra_tuples),
+                                   columns=col)
     return df.sort_values(by='start').reset_index(drop=True)
 
 # steps in the parse chain
 
 # 1. grouping consecutive vocalizations matching a given list
 
-def group_elements(voc_list, targets, alias_fn=lambda x: x):
+def group_elements(voc_list, targets, alias_fn=lambda x: x, ignore=[]):
     """Group adjacent runs of certain vocalizations together.
     
     Args:
         voc_list (list of Vocalizations): should be sorted in time
         targets (list of strings): names of vocalizations to group together
         alias_fn (callable: str->str): function to alias nonstandard names
+        ignore (list of strings): names of vocalizations to treat as nonexistent
     
     Returns:
         list of VocGroups: input group order is preserved"""
@@ -302,13 +307,14 @@ def group_elements(voc_list, targets, alias_fn=lambda x: x):
     last_in_target = False
     for idx,voc in enumerate(voc_list):
         aliased = alias_fn(voc.name)
-        if aliased in targets:
-            if not last_in_target:
-                groups.append([])
-                last_in_target = True
-            groups[-1].append(idx)
-        else:
-            last_in_target = False
+        if aliased not in ignore:
+            if aliased in targets:
+                if not last_in_target:
+                    groups.append([])
+                    last_in_target = True
+                groups[-1].append(idx)
+            else:
+                last_in_target = False
     return [VocGroup(voc_list, voc_idxs) for voc_idxs in groups]
 
 # 2. anneal groups separated by a short interval
