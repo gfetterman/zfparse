@@ -75,8 +75,8 @@ The `dataframe_from_phrases()` function will construct a Pandas DataFrame from a
 1. the phrase number within the list
 2. the bout number within a phrase
 3. the motif number within a bout
-  * this will be 'intro' for intro notes
-  * this will be 'extra' for intervening vocalizations
+    * this will be 'intro' for intro notes
+    * this will be 'extra' for intervening vocalizations
 4. the vocalization number within a motif or 'intro' or 'extra' group
 5. the vocalization start datetime
 6. the vocalization stop datetime
