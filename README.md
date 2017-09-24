@@ -25,7 +25,10 @@ Information about a given bird's vocalization behavior is stored in a `BirdMetad
     birdmeta = zfparse.BirdMeta(name='[birdname]',
                                 syllables=['a', 'b', 'c', 'd', 'e'],
                                 intro_note='i',
-                                intro_aliases=[])
+                                intro_aliases=[],
+                                ignore=['z'])
+
+The optional parameter `ignore` allows you to specify label names which should not be included in the parse - for example, if 'z' denotes a cagemate call, including it in `ignore` will ensure that cagemate calls don't interfere with parsing. (They may not interfere even if included, but this option allows you to be certain.)
 
 You can then obtain phrases, bouts, and motifs by running `full_parse()`.
 
