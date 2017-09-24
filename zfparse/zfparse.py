@@ -248,6 +248,42 @@ def full_parse(voc_list,
     phrases = define_phrases(bouts, phrase_anneal)
     return sorted(phrases, key=lambda p: p[0].start)
 
+def dataframe_from_phrases(phrase_list):
+    """Convert a list of phrases into a pandas DataFrame containing all vocalizations.
+    
+    The DataFrame has columns for:
+      * phrase number
+      * bout number within a phrase
+      * motif number within a bout (or 'intro' for intro notes or 'extra' for
+        intervening vocalizations
+      * vocalization number within a group (i.e., motif, 'intro', or 'extra')
+      * the vocalization start time
+      * the vocalization stop time
+      * the vocalization name
+    
+    Args:
+        phrase_list (list of lists of Bouts)
+    
+    Returns:
+        DataFrame"""
+    import pandas as pd
+    col = ['phrase', 'bout', 'motif', 'vocalization', 'start', 'stop', 'name']
+    intro_tuples = [(p_idx,b_idx,'intro',i_idx,start,stop,name)
+                    for p_idx,phrase in enumerate(phrase_list)
+                    for b_idx,bout in enumerate(phrase)
+                    for i_idx,(start,stop,name) in enumerate(bout.intro_notes)]
+    syll_tuples = [(p_idx,b_idx,m_idx,s_idx,start,stop,name)
+                   for p_idx,phrase in enumerate(phrase_list)
+                   for b_idx,bout in enumerate(phrase)
+                   for m_idx,motif in enumerate(bout.motifs)
+                   for s_idx,(start,stop,name) in enumerate(motif)]
+    extra_tuples = [(p_idx,b_idx,'extra',e_idx,start,stop,name)
+                    for p_idx,phrase in enumerate(phrase_list)
+                    for b_idx,bout in enumerate(phrase)
+                    for e_idx,(start,stop,name) in enumerate(bout.intervening_vocs)]
+    df = pd.DataFrame.from_records((intro_tuples + syll_tuples + extra_tuples), columns=col)
+    return df.sort_values(by='start').reset_index(drop=True)
+
 # steps in the parse chain
 
 # 1. grouping consecutive vocalizations matching a given list
