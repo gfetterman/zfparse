@@ -385,12 +385,15 @@ def define_bouts(intro_groups, song_groups, anneal_threshold):
     sg_left = list(song_groups)
     bouts = []
     for ig in intro_groups:
-        near_idx = min([i for i,g in enumerate(sg_left) if ig.stop < g.start],
-                       key=lambda idx: delta_t(ig, sg_left[idx]))
-        near_sg = sg_left[near_idx]
-        if delta_t(ig, near_sg) <= anneal_threshold:
-            bouts.append(Bout(ig.voc_list, ig, near_sg))
-            sg_left.pop(near_idx);
+        options = [i for i,g in enumerate(sg_left) if ig.stop < g.start]
+        if options:
+            near_idx = min(options, key=lambda idx: delta_t(ig, sg_left[idx]))
+            near_sg = sg_left[near_idx]
+            if delta_t(ig, near_sg) <= anneal_threshold:
+                bouts.append(Bout(ig.voc_list, ig, near_sg))
+                sg_left.pop(near_idx)
+            else:
+                bouts.append(Bout(ig.voc_list, ig, VocGroup(ig.voc_list)))
         else:
             bouts.append(Bout(ig.voc_list, ig, VocGroup(ig.voc_list)))
     bouts.extend([Bout(g.voc_list, VocGroup(g.voc_list), g) for g in sg_left])
