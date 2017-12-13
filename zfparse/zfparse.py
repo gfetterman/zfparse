@@ -1,4 +1,3 @@
-import bark
 import collections as coll
 import copy
 import datetime as dt
