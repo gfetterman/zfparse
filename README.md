@@ -84,5 +84,43 @@ The `dataframe_from_phrases()` function will construct a Pandas DataFrame from a
 
 ## Parsing explanation
 
-[Coming soon]
+Parsing occurs in six steps, some of which have associated parameters which shape their output and can be modified from their default values in the call to `full_parse()`:
 
+1. Separately group intro notes and song syllables.
+
+   These groups are generated solely by sequential proximity:
+   
+   `i i c3 i i i` => two groups: `i i` and `i i i`
+2. Combine groups of the same type separated by a short interval, regardless of intervening vocalizations.
+
+   Parameters: `intro_anneal` and `song_anneal`
+   
+   These parameters determine how short an interval is used.
+   
+   The default value for both is 500ms.
+3. Split groups containing long silent intervals.
+
+   Parameter: `intro_split` and `song_split`
+   
+   These parameters determine how long an interval of silence must be to trigger a split.
+   
+   The default value for both is 800ms.
+4. Combine intro note and song syllable groups into bouts.
+
+   Parameter: `bout_anneal`
+   
+   This parameter determines how close an intro note group and a song syllable group must be to be glued together into a bout.
+   
+   The default value is 500ms.
+5. Break song syllable groups in the bouts into motifs.
+
+   A new motif begins when the current syllable comes before the last syllable in the song sequence.
+   
+   I.e.: `a b c a b` => two motifs: `a b c` and `a b`
+6. Combine bouts separated by a short interval into phrases.
+
+   Parameter: `phrase_anneal`
+   
+   This parameter determines how close two bouts must be to be combined into a phrase.
+   
+   The default value is 2000ms.
