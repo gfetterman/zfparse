@@ -28,10 +28,12 @@ def delta_t(first, second):
 
 class BirdMetadata:
     """A container for data about a bird's vocalization behavior."""
-    def __init__(self, name, syllables, intro_note, intro_aliases, ignore=None):
+    def __init__(self, name, syllables, intro_note, intro_aliases=None, ignore=None):
         self.name = name
         self.syllables = syllables
         self.intro_note = intro_note
+        if intro_aliases is None:
+            intro_aliases = []
         self.intro_aliases = intro_aliases
         if ignore is None:
             ignore = []
