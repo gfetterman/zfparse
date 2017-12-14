@@ -81,8 +81,7 @@ class BirdMetadata:
     def alias(self, voc):
         """Alias a vocalization name.
         
-        Uses the alias_table if it exists, or the default_alias function
-        if not.
+        Uses `alias_table` if it exists, or :meth:`default_alias` if not.
         
         Args:
             voc (str): vocalization name to alias
