@@ -26,9 +26,47 @@ def delta_t(first, second):
     """Time between end of first and beginning of second."""
     return (second.start - first.stop).total_seconds()
 
+def default_alias(voc, bird_meta, elide_garbled=True, elide_versions=True):
+    """Alias a vocalization name according to Graham's labeling scheme.
+    
+    A garbled vocalization (usually due to experimental limitations) is
+    denoted by "[name]*".
+    A specific version of a vocalization (e.g., a rare syllable variant) is
+    denoted by "[name]_[number]".
+    
+    Args:
+        voc (str): vocalization name to alias
+        bird_meta (BirdMetadata): vocalization behavior metadata
+        elide_garbled (bool): convert [name]* to [name]
+        elide_versions (bool): convert [name]_[number] to [name]
+    
+    Returns:
+        str: the aliased ("ideal") vocalization name"""
+    if not voc or voc in bird_meta.ignore:
+        return voc
+    v = voc
+    if elide_garbled and v[-1] == '*':
+        v = v[:-1]
+    if elide_versions and '_' in v:
+        garb = False
+        if '*' in v:
+            garb = True
+        v = v.split('_')[0]
+        if garb and not elide_garbled:
+            v += '*'
+    if v in bird_meta.intro_aliases:
+        v = bird_meta.intro_note
+    return v
+
 class BirdMetadata:
     """A container for data about a bird's vocalization behavior."""
-    def __init__(self, name, syllables, intro_note, intro_aliases=None, ignore=None):
+    def __init__(self,
+                 name,
+                 syllables,
+                 intro_note,
+                 intro_aliases=None,
+                 ignore=None,
+                 alias_table=None):
         self.name = name
         self.syllables = syllables
         self.intro_note = intro_note
@@ -38,37 +76,23 @@ class BirdMetadata:
         if ignore is None:
             ignore = []
         self.ignore = ignore
+        self.alias_table = alias_table
 
-    def alias(self, voc, elide_garbled=True, elide_versions=True):
-        """Alias a vocalization name according to Graham's labeling scheme.
+    def alias(self, voc):
+        """Alias a vocalization name.
         
-        A garbled vocalization (usually due to experimental limitations) is
-        denoted by "[name]*".
-        A specific version of a vocalization (e.g., a rare syllable variant) is
-        denoted by "[name]_[number]".
+        Uses the alias_table if it exists, or the default_alias function
+        if not.
         
         Args:
             voc (str): vocalization name to alias
-            elide_garbled (bool): convert [name]* to [name]
-            elide_versions (bool): convert [name]_[number] to [name]
         
         Returns:
             str: the aliased ("ideal") vocalization name"""
-        if not voc or voc in self.ignore:
-            return voc
-        v = voc
-        if elide_garbled and v[-1] == '*':
-            v = v[:-1]
-        if elide_versions and '_' in v:
-            garb = False
-            if '*' in v:
-                garb = True
-            v = v.split('_')[0]
-            if garb and not elide_garbled:
-                v += '*'
-        if v in self.intro_aliases:
-            v = self.intro_note
-        return v
+        if self.alias_table is None:
+            return default_alias(voc, self)
+        else:
+            return self.alias_table.get(voc, voc)
 
 # primary objects of contemplation
 
